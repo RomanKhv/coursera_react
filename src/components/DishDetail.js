@@ -1,19 +1,12 @@
-import { Component } from "react";
-import { Control, LocalForm } from "react-redux-form";
+import React, { Component } from "react";
+import { Control, Errors, LocalForm } from "react-redux-form";
 import { Link } from "react-router-dom";
-import { Breadcrumb, BreadcrumbItem, Button, Card, CardBody, CardImg, CardText, CardTitle, Container, Form, FormGroup as div, FormGroup, Input, Label, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Breadcrumb, BreadcrumbItem, Button, Card, CardBody, CardImg, CardText, CardTitle, Container, FormGroup, Label, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-class SubmitCommentForm extends Component {
+const checkMinL = threshold => val => !!(val) && (val.length >= threshold);
+const checkMaxL = threshold => val => !(val) || (val.length <= threshold);
 
-    render() {
-        return (
-            <div></div>
-        );
-    }
-}
-
-/////////////////////////////////////////////////////
-class DishDetail extends Component {
+class CommentForm extends Component {
     constructor(props) {
         super(props);
 
@@ -25,6 +18,58 @@ class DishDetail extends Component {
         this.submitComment = this.submitComment.bind(this);
     }
 
+    toggleCommentDlg() {
+        this.setState({ isSubmitFormOpen: !this.state.isSubmitFormOpen });
+    }
+
+    submitComment(data) {
+        alert(JSON.stringify(data));
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <Button onClick={this.toggleCommentDlg}>Submit Comment...</Button>
+                <Modal isOpen={this.state.isSubmitFormOpen} toggle={this.toggleCommentDlg}>
+                    <ModalHeader toggle={this.toggleCommentDlg}>Submit Comment</ModalHeader>
+                    <ModalBody>
+                        <LocalForm onSubmit={values => this.submitComment(values)}>
+                            <FormGroup>
+                                <Label htmlFor="rating">Rating</Label>
+                                <Control.select model=".rating" id="rating" name="rating" className="form-control-select">
+                                    {[1, 2, 3, 4, 5].map(val => { return (<option>{val}</option>); })}
+                                </Control.select>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="name">Your name</Label>
+                                <Control.text model=".name" id="name" name="name" className="form-control"
+                                    validators={{ minLength: checkMinL(3), maxLength: checkMaxL(15) }}
+                                />
+                                <Errors className="text-danger" model=".name" show={true}
+                                    messages={{
+                                        minLength: 'Name is too short',
+                                        maxLength: 'Name should be shorter',
+                                    }}
+                                />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="comment">Comment</Label>
+                                <Control.textarea model=".comment" id="comment" name="comment" className="form-control" rows={6} />
+                            </FormGroup>
+                            <FormGroup>
+                                <Button type="submit" color="primary">Submit</Button>
+                            </FormGroup>
+                        </LocalForm>
+                    </ModalBody>
+                </Modal>
+
+            </React.Fragment>
+        );
+    }
+}
+
+/////////////////////////////////////////////////////
+class DishDetail extends Component {
     componentDidMount() {
         console.log('DishDetail::componentDidMount()');
     }
@@ -71,14 +116,6 @@ class DishDetail extends Component {
         </div>;
     }
 
-    toggleCommentDlg() {
-        this.setState({ isSubmitFormOpen: !this.state.isSubmitFormOpen });
-    }
-
-    submitComment(data) {
-        alert(JSON.stringify(data));
-    }
-
     renderComments(comments) {
         if (comments.length === 0)
             return (<div></div>);
@@ -95,41 +132,9 @@ class DishDetail extends Component {
             <ul>
                 {body}
             </ul>
-            <Button onClick={this.toggleCommentDlg}>Submit Comment...</Button>
-            <Modal isOpen={this.state.isSubmitFormOpen} toggle={this.toggleCommentDlg}>
-                <ModalHeader toggle={this.toggleCommentDlg}>Submit Comment</ModalHeader>
-                <ModalBody>
-                    <LocalForm onSubmit={values => this.submitComment(values)}>
-                        <FormGroup>
-                            <Label htmlFor="rating">Rating</Label>
-                            <Control.select model=".rating" id="rating" name="rating" className="form-control-select">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                            </Control.select>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="name">Your name</Label>
-                            <Control.text model=".name" id="name" name="name" className="form-control" />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="comment">Comment</Label>
-                            <Control.textarea model=".comment" id="comment" name="comment" className="form-control" />
-                        </FormGroup>
-                        <FormGroup>
-                            <Button type="submit" color="primary">Submit</Button>
-                        </FormGroup>
-                    </LocalForm>
-                </ModalBody>
-            </Modal>
+            <CommentForm />
         </div>;
     }
 }
-/*
-<Input type="text" name="name" />
-
-*/
-
-//{[1,2,3,4,5].map(val => {<option>{val}</option>})}
 
 export default DishDetail;

@@ -23,7 +23,9 @@ class CommentForm extends Component {
     }
 
     submitComment(data) {
-        alert(JSON.stringify(data));
+        this.toggleCommentDlg();
+        console.log('submit comment: ' + JSON.stringify(data));
+        this.props.addComment(this.props.dishId, data.rating, data.author, data.comment);
     }
 
     render() {
@@ -42,10 +44,10 @@ class CommentForm extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <Label htmlFor="name">Your name</Label>
-                                <Control.text model=".name" id="name" name="name" className="form-control"
+                                <Control.text model=".author" id="name" name="name" className="form-control"
                                     validators={{ minLength: checkMinL(3), maxLength: checkMaxL(15) }}
                                 />
-                                <Errors className="text-danger" model=".name" show={true}
+                                <Errors className="text-danger" model=".author" show={true}
                                     messages={{
                                         minLength: 'Name is too short',
                                         maxLength: 'Name should be shorter',
@@ -68,7 +70,29 @@ class CommentForm extends Component {
     }
 }
 
-/////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+function RenderComments({ comments, addComment, dishId }) {
+    if (comments.length === 0)
+        return (<div></div>);
+    let body = comments.map((comm) => {
+        return (
+            <li key={comm.id.toString()}>
+                <p>{comm.comment}</p>
+                <p>-- {comm.author}, {(new Date(comm.date)).toDateString()}</p>
+            </li>
+        );
+    });
+    return <div className="col-12 col-md-5 m-1">
+        <h4>Comments</h4>
+        <ul className="list-unstyled">
+            {body}
+        </ul>
+        <CommentForm dishId={dishId} addComment={addComment} />
+    </div>;
+}
+
+//////////////////////////////////////////////////////////////////////
 class DishDetail extends Component {
     componentDidMount() {
         console.log('DishDetail::componentDidMount()');
@@ -98,7 +122,10 @@ class DishDetail extends Component {
                 </div>
                 <Row>
                     {this.renderDish(this.props.dish)}
-                    {this.renderComments(this.props.comments)}
+                    <RenderComments comments={this.props.comments}
+                        addComment={this.props.addComment}
+                        dishId={this.props.dish.id}
+                    />
                 </Row>
             </Container>
         );
@@ -116,25 +143,6 @@ class DishDetail extends Component {
         </div>;
     }
 
-    renderComments(comments) {
-        if (comments.length === 0)
-            return (<div></div>);
-        let body = comments.map((comm) => {
-            return (
-                <li key={comm.id.toString()}>
-                    <p>{comm.comment}</p>
-                    <p>-- {comm.author}, {(new Date(comm.date)).toDateString()}</p>
-                </li>
-            );
-        });
-        return <div className="col-md-5">
-            <h4>Comments</h4>
-            <ul>
-                {body}
-            </ul>
-            <CommentForm />
-        </div>;
-    }
 }
 
 export default DishDetail;

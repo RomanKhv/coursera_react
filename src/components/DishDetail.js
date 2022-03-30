@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import { Control, Errors, LocalForm } from "react-redux-form";
 import { Link } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, Button, Card, CardBody, CardImg, CardText, CardTitle, Container, FormGroup, Label, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Loading } from '../components/Loading';
 
 const checkMinL = threshold => val => !!(val) && (val.length >= threshold);
 const checkMaxL = threshold => val => !(val) || (val.length <= threshold);
+
+////////////////////////////////////////////////////////////
 
 class CommentForm extends Component {
     constructor(props) {
@@ -39,7 +42,7 @@ class CommentForm extends Component {
                             <FormGroup>
                                 <Label htmlFor="rating">Rating</Label>
                                 <Control.select model=".rating" id="rating" name="rating" className="form-control-select">
-                                    {[1, 2, 3, 4, 5].map(val => { return (<option>{val}</option>); })}
+                                    {[1, 2, 3, 4, 5].map(val => { return (<option key={val}>{val}</option>); })}
                                 </Control.select>
                             </FormGroup>
                             <FormGroup>
@@ -93,6 +96,7 @@ function RenderComments({ comments, addComment, dishId }) {
 }
 
 //////////////////////////////////////////////////////////////////////
+
 class DishDetail extends Component {
     componentDidMount() {
         console.log('DishDetail::componentDidMount()');
@@ -108,6 +112,24 @@ class DishDetail extends Component {
 
     render() {
         console.log('DishDetail::render()');
+        if (this.props.isLoading) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        else if (this.props.errMsg) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <h4>{this.props.errMsg}</h4>
+                    </div>
+                </div>
+            );
+        }
         if (!this.props.dish)
             return (<div></div>);
         return (

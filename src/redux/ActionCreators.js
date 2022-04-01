@@ -13,7 +13,6 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
         author,
         comment,
     };
-
     newComment.date = new Date().toISOString();
 
     return fetch(baseUrl + 'comments', {
@@ -41,7 +40,37 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
         });
 };
 
-////////////////////////////////////////////////////////////
+export const postFeedback = (fb) => {
+    console.log('postFeedback: ', fb);
+    const newFeedback = { ...fb };
+    newFeedback.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'feedback', {
+        method: 'POST',
+        body: JSON.stringify(newFeedback),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+    })
+        .then(response => {
+            if (response.ok)
+                return response;
+            else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        })
+        .then(response => response.json())
+        .then(data => alert('Feedback posted: ' + JSON.stringify(data)))
+        .catch(error => {
+            console.log('Post feedback ', error.message);
+            alert('Your feedback failed to be posted ' + error.message);
+        });
+};
+
+//////////////////////////////////////////////////////////////////////
 
 export const fetchDishes = () => (dispatch) => {
     console.log('fetchDishes');

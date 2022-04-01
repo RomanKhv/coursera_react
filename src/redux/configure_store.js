@@ -3,18 +3,18 @@ import { createForms } from "react-redux-form";
 import thunk from "redux-thunk";
 import logger from "redux-logger";
 import { DishesReducer } from "./dishes_update";
-import { Comments } from "./comments";
+import { CommentsReducer } from "./comments_update";
 import { Leaders } from "./leaders";
-import { Promotions } from "./promotions";
+import { PromotionsReducer } from "./promotions_update";
 import { InitialFeedback } from "./forms";
 
 export const ConfigureStore = () => {
     const store = createStore(
         combineReducers({
             dishes: DishesReducer,
-            comments: Comments,
+            comments: CommentsReducer,
             leaders: Leaders,
-            promos: Promotions,
+            promos: PromotionsReducer,
             ...createForms({
                 feedback: InitialFeedback,
             })

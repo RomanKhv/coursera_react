@@ -3,6 +3,7 @@ import { Control, Errors, LocalForm } from "react-redux-form";
 import { Link } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, Button, Card, CardBody, CardImg, CardText, CardTitle, Container, FormGroup, Label, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import { Loading } from '../components/Loading';
+import { baseUrl } from "../shared/baseUrl";
 
 const checkMinL = threshold => val => !!(val) && (val.length >= threshold);
 const checkMaxL = threshold => val => !(val) || (val.length <= threshold);
@@ -28,7 +29,7 @@ class CommentForm extends Component {
     submitComment(data) {
         this.toggleCommentDlg();
         console.log('submit comment: ' + JSON.stringify(data));
-        this.props.addComment(this.props.dishId, data.rating, data.author, data.comment);
+        this.props.postComment(this.props.dishId, data.rating, data.author, data.comment);
     }
 
     render() {
@@ -75,7 +76,7 @@ class CommentForm extends Component {
 
 //////////////////////////////////////////////////////////////////////
 
-function RenderComments({ comments, addComment, dishId }) {
+function RenderComments({ comments, postComment, dishId }) {
     if (comments.length === 0)
         return (<div></div>);
     let body = comments.map((comm) => {
@@ -91,7 +92,7 @@ function RenderComments({ comments, addComment, dishId }) {
         <ul className="list-unstyled">
             {body}
         </ul>
-        <CommentForm dishId={dishId} addComment={addComment} />
+        <CommentForm dishId={dishId} postComment={postComment} />
     </div>;
 }
 
@@ -145,7 +146,7 @@ class DishDetail extends Component {
                 <Row>
                     {this.renderDish(this.props.dish)}
                     <RenderComments comments={this.props.comments}
-                        addComment={this.props.addComment}
+                        postComment={this.props.postComment}
                         dishId={this.props.dish.id}
                     />
                 </Row>
@@ -156,7 +157,7 @@ class DishDetail extends Component {
     renderDish(dish) {
         return <div className="col-12 col-md-5 m-1">
             <Card>
-                <CardImg top width="100%" src={dish.image} alt={dish.name} />
+                <CardImg top width="100%" src={baseUrl + dish.image} alt={dish.name} />
                 <CardBody>
                     <CardTitle tag="h5">{dish.name}</CardTitle>
                     <CardText>{dish.description}</CardText>

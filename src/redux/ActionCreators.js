@@ -83,7 +83,7 @@ export const addDishes = (dishes) => ({
     payload: dishes,
 });
 
-////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 export const fetchComments = () => (dispatch) => {
     return fetch(baseUrl + 'comments')
@@ -116,7 +116,7 @@ export const addComments = (comments) => ({
     payload: comments,
 });
 
-////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 export const fetchPromos = () => (dispatch) => {
     console.log('fetchPromos');
@@ -154,4 +154,43 @@ export const promosFailed = (errmsg) => ({
 export const addPromos = (promos) => ({
     type: ActionTypes.ADD_PROMOS,
     payload: promos,
+});
+
+//////////////////////////////////////////////////////////////////////
+
+export const fetchLeaders = () => (dispatch) => {
+    dispatch(leadersLoading(true));
+
+    return fetch(baseUrl + 'leaders')
+        .then(
+            response => {
+                if (response.ok)
+                    return response;
+                else {
+                    var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                    error.response = response;
+                    throw error;
+                }
+            },
+            error => {
+                throw new Error(error.message);
+            }
+        )
+        .then(response => response.json())
+        .then(data => dispatch(addLeaders(data)))
+        .catch(error => dispatch(leadersFailed(error.message)));
+};
+
+export const leadersLoading = () => ({
+    type: ActionTypes.LEADERS_LOADING
+});
+
+export const leadersFailed = (errmsg) => ({
+    type: ActionTypes.LEADERS_FAILED,
+    payload: errmsg,
+});
+
+export const addLeaders = (leaders) => ({
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders,
 });
